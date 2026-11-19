@@ -48,3 +48,14 @@ class Paddle:
             self.sprite_w * -1,
             self.sprite_w
         )
+#F
+
+    def update(self):
+        #Mover la barrita en base a la localisacion del mouse
+        self.x = min(pyxel.width - self.w, max(0, pyxel.mouse_x))
+
+    def deflect_force(self, u):
+        #Regresa la bolita cuando choca con la barrita
+        force = (u - (self.x + self.w / 2)) / 20
+        return force
+    
