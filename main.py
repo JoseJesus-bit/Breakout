@@ -33,6 +33,7 @@ class App:
         self.ball
 
     def update(self):
+        self.check_input()
         self.paddle.update()
         if self.current_game_state == GameState.READY:
             self.ball.x = self.paddle.x + self.paddle.w / 2 + 10
@@ -48,6 +49,12 @@ class App:
         if collision:
             pass
 
+    def check_input(self):
+        if self.current_game_state == GameState.READY:
+            if pyxel.btnp(pyxel.KEY_SPACE) or pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
+                #Lanzar la pelotita con el espacio o el boton derecho
+                self.current_game_state = GameState.RUNNING        
+    
     def draw(self):
         pyxel.cls(0)
         self.paddle.draw()
