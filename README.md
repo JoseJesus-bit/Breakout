@@ -4,7 +4,7 @@ Proyecto que nos dejo Light Mary.
 Se desarrollará un trabajo para replicar el videojuegos "Breakout"
 Por los estudiantes mas insanos del tec ajua 🐺
 
-Me quede en el min 53. -SoloLobo2
+Me quede en el min 1:55:50 . -AnglxNoBinario
 
 link del video caballeros
 https://youtu.be/8Glx88BVMLs?si=LOXm6Ji2-Y0UCVi-
