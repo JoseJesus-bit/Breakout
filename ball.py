@@ -28,14 +28,13 @@ class Ball:
 
 #frijolito
     def detect_collision(self, obj , paddle = False): #Funcion de las coliciones de la barrita
+        score = 0 #Para empezar el score en 0
         #Calcular el numero de coliciones que hay entre la bola y la barrita
         num_steps = ceil(max(abs(self.speedX), abs(self.speedY)))
         if num_steps == 0:
-            return False # la bolita no se mueve
-
+            return False, score # la bolita no se mueve
         #Calcular el incremento de la bola en cada paso
         step_size = 1.0 / num_steps
-
         #Verificar las coliciones de la bola con la barrita
         for step in range(1, num_steps + 1):
             t = step * step_size   #interpolacion entre el paso actual y el siguiente
@@ -57,15 +56,20 @@ class Ball:
                     # la bola choca el lado izquierdo del ladrillito
                     self.x = obj.x - self.r
                     self.speedX = self.speedX * -1
+                    score = obj.score
                 elif sub_ball_x - self.r <= obj.x + obj.w < sub_ball_x + self.r:
                     # la bola toca el lado derecho
                     self.x = obj.x + obj.w + self.r
                     self.speedX = self.speedX * -1
+                    score = obj.score
                 elif sub_ball_y + self.r >= obj.y > sub_ball_y - self.r:
                     self.y = obj.y - self.r
                     self.speedY = self.speedY * -1 
+                    score = obj.score
                 elif sub_ball_y - self.r <= obj.y + obj.h < sub_ball_y + self.r:
                     self.y = obj.y + obj.h + self.r
                     self.speedY = self.speedY * -1 
-                return True
-        return False #No hubo colicion
+                    score = obj.score
+                return True, score 
+        return False, score #No hubo colicion
+    

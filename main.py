@@ -8,6 +8,9 @@ import enum
 from ball import Ball
 from paddle import Paddle
 from brick import check_levels, load_level
+from hud import draw_hud, draw_dropped, draw_game_over, draw_win
+
+
 #F
 class GameState(enum.Enum):
     READY = 0
@@ -24,12 +27,16 @@ class App:
         self.paddle = Paddle()
         self.ball = Ball()
         self.reset_ball()
+        self.lives = None
+        self.score = None
         self.bricks = None
         self.current_level = None
         self.start_new_game()
         pyxel.run(self.update, self.draw)
 
     def start_new_game(self):
+        self.lives = 3
+        self.score = 0
         self.current_level = 1
         self.bricks = load_level(self.levels[self.current_level -1])
         self.reset_ball()
@@ -57,18 +64,23 @@ class App:
             self.ball.update()
             self.check_collision()
             if self.ball.out_of_bounds:
-                self.current_game_state = GameState.DROPPED
+                self.lives -= 1
+                if self.lives > 0:
+                    self.current_game_state = GameState.DROPPED
+                else:
+                    self.current_game_state = GameState.GAME_OVER 
 
     def check_collision(self):
         #bolita contra la barrita
-        collision = self.ball.detect_collision(self.paddle, paddle=True)
+        collision, _ = self.ball.detect_collision(self.paddle, paddle=True)
         if collision:
             pass
         # Ball vs Bricks
         for i in reversed(range(len(self.bricks))):
             b = self.bricks[i]
-            collision = self.ball.detect_collision(b)
+            collision, score = self.ball.detect_collision(b)
             if collision:
+                self.score += score
                 del self.bricks[i]
                 self.check_level_complete()
                 break
@@ -89,6 +101,10 @@ class App:
             if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) or pyxel.btnp(pyxel.KEY_SPACE):
                 self.reset_ball()
                 self.current_game_state = GameState.READY
+        if self.current_game_state == GameState.GAME_OVER or self.current_game_state == GameState.WIN:
+            if pyxel.btnp(pyxel.KEY_RETURN):
+                self.start_new_game()
+          
    
     def draw(self):
         pyxel.cls(0)
@@ -96,7 +112,15 @@ class App:
         for b in self.bricks:
             b.draw()
         self.ball.draw()
+        draw_hud(score=self.score, lives=self.lives)
+        if self.current_game_state == GameState.DROPPED:
+            draw_dropped()
+        if self.current_game_state == GameState.GAME_OVER:
+            draw_game_over(score=self.score)
+        if self.current_game_state == GameState.WIN:
+            draw_win(score=self.score)
         pyxel.text(10, pyxel.height - 20, str(self.current_game_state), 7)
+        pyxel.text(10, pyxel.height - 10, str(self.score), 7)
 
 #f--
 # Kickstart our app
