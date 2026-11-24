@@ -26,6 +26,10 @@ class Ball:
         elif self.y - self.r > pyxel.height:
             self.out_of_bounds = True
 
+    def speedup(self, amount):
+        self.speedX += copysign(amount, self.speedX)
+        self.speedY += copysign(amount, self.speedY)
+
 #frijolito
     def detect_collision(self, obj , paddle = False): #Funcion de las coliciones de la barrita
         score = 0 #Para empezar el score en 0

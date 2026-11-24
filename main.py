@@ -32,6 +32,7 @@ class App:
         self.paddle = Paddle()
         self.ball = Ball()
         self.reset_ball()
+        self.bounces = 0
         self.lives = None
         self.score = None
         self.bricks = None
@@ -53,6 +54,7 @@ class App:
         self.ball.speedX = self.paddle.deflect_force(self.ball.x)
         self.ball.speedY = -2.5
         self.ball.out_of_bounds = False
+        self.bounces = 0
 
     def start_next_level(self):
         self.current_level += 1
@@ -81,16 +83,26 @@ class App:
         collision, _ = self.ball.detect_collision(self.paddle, paddle=True)
         if collision:
             pyxel.play(0, PADDLE_SOUND)
+            self.bounces += 1
+            self.check_speedup()
         # Ball vs Bricks
         for i in reversed(range(len(self.bricks))):
             b = self.bricks[i]
             collision, score = self.ball.detect_collision(b)
             if collision:
                 pyxel.play(0, BRICK_SOUND)
+                self.bounces += 1
+                self.check_speedup()
                 self.score += score
                 del self.bricks[i]
                 self.check_level_complete()
                 break
+            
+    def check_speedup(self):
+        if self.bounces == 4:
+            self.ball.speedup(1.0)
+        if self.bounces == 12:
+            self.ball.speedup(2.0)
 
     def check_level_complete(self):
         if len(self.bricks) == 0:
