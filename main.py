@@ -18,10 +18,15 @@ class GameState(enum.Enum):
     DROPPED = 2
     GAME_OVER = 3
     WIN = 4 
+
+PADDLE_SOUND = 0
+BRICK_SOUND = 1
+DROP_SOUND = 2
+
 #F--
 class App:
     def __init__(self):
-        pyxel.init(384,300, display_scale=2, title="Breakout", fps=60)
+        pyxel.init(384, 300, display_scale=2, title="Breakout", fps=60)
         pyxel.load("assets/resources.pyxres")
         self.levels = check_levels()
         self.paddle = Paddle()
@@ -64,6 +69,7 @@ class App:
             self.ball.update()
             self.check_collision()
             if self.ball.out_of_bounds:
+                pyxel.play(0, DROP_SOUND)
                 self.lives -= 1
                 if self.lives > 0:
                     self.current_game_state = GameState.DROPPED
@@ -74,12 +80,13 @@ class App:
         #bolita contra la barrita
         collision, _ = self.ball.detect_collision(self.paddle, paddle=True)
         if collision:
-            pass
+            pyxel.play(0, PADDLE_SOUND)
         # Ball vs Bricks
         for i in reversed(range(len(self.bricks))):
             b = self.bricks[i]
             collision, score = self.ball.detect_collision(b)
             if collision:
+                pyxel.play(0, BRICK_SOUND)
                 self.score += score
                 del self.bricks[i]
                 self.check_level_complete()
@@ -95,7 +102,7 @@ class App:
     def check_input(self):
         if self.current_game_state == GameState.READY:
             if pyxel.btnp(pyxel.KEY_SPACE) or pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
-                #Lanzar la pelotita con el espacio o el boton derecho
+                # Lanzar la pelotita con espacio o clic izquierdo
                 self.current_game_state = GameState.RUNNING        
         if self.current_game_state == GameState.DROPPED:
             if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) or pyxel.btnp(pyxel.KEY_SPACE):
@@ -119,8 +126,6 @@ class App:
             draw_game_over(score=self.score)
         if self.current_game_state == GameState.WIN:
             draw_win(score=self.score)
-        pyxel.text(10, pyxel.height - 20, str(self.current_game_state), 7)
-        pyxel.text(10, pyxel.height - 10, str(self.score), 7)
 
 #f--
 # Kickstart our app
